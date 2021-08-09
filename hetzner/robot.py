@@ -19,6 +19,7 @@ from hetzner import WebRobotError, RobotError
 from hetzner.server import Server
 from hetzner.rdns import ReverseDNSManager
 from hetzner.failover import FailoverManager
+from hetzner.vswitch import VswitchManager
 from hetzner.util.http import ValidatedHTTPSConnection
 
 ROBOT_HOST = "robot-ws.your-server.de"
@@ -363,6 +364,7 @@ class RobotConnection(object):
 
         self.logger.debug("Sending %s request to Robot at %s with data %r.",
                           method, path, data)
+
         response = self._request(method, path, data, headers)
         raw_data = response.read().decode('utf-8')
         if len(raw_data) == 0 and not allow_empty:
@@ -434,3 +436,4 @@ class Robot(object):
         self.servers = ServerManager(self.conn)
         self.rdns = ReverseDNSManager(self.conn)
         self.failover = FailoverManager(self.conn, self.servers)
+        self.vswitch = VswitchManager(self.conn, self.servers)

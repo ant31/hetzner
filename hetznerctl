@@ -266,6 +266,18 @@ class Failover(SubCommand):
                 self.putline(str(failover))
 
 
+class Vswitch(SubCommand):
+    command = 'vswitch'
+    description = 'List vswitch'
+
+    def execute(self, robot, parser, args):
+        vswitchs = robot.vswitch.list()
+        if len(vswitchs) > 0:
+            self.putline("Found %s vswitch IPs" % len(vswitchs))
+        for vswitch in vswitchs.values():
+            self.putline(str(vswitch))
+
+
 class Admin(SubCommand):
     command = 'admin'
     description = "Create/delete dedicated admin accounts"
@@ -348,6 +360,7 @@ def main():
         ReverseDNS,
         Admin,
         Failover,
+        Vswitch
     ]
 
     common_parser = argparse.ArgumentParser(
