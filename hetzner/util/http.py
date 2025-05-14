@@ -3,11 +3,7 @@ import ssl
 import socket
 
 from tempfile import NamedTemporaryFile
-
-try:
-    from httplib import HTTPSConnection
-except ImportError:
-    from http.client import HTTPSConnection
+from http.client import HTTPSConnection
 
 
 class ValidatedHTTPSConnection(HTTPSConnection):
@@ -52,19 +48,18 @@ class ValidatedHTTPSConnection(HTTPSConnection):
         return None
 
     def connect(self):
-        sock = socket.create_connection((self.host, self.port),
-                                        self.timeout,
-                                        self.source_address)
-        bundle = cafile = self.get_ca_cert_bundle()
-        if bundle is None:
-            ca_certs = NamedTemporaryFile()
-            ca_certs.write('\n'.join(
-                map(str.strip, self.CA_ROOT_CERT_FALLBACK.splitlines())
-            ).encode('ascii'))
-            ca_certs.flush()
-            cafile = ca_certs.name
-        self.sock = ssl.wrap_socket(sock, self.key_file, self.cert_file,
-                                    cert_reqs=ssl.CERT_REQUIRED,
-                                    ca_certs=cafile)
-        if bundle is None:
-            ca_certs.close()
+        context = ssl.create_default_context()
+        with socket.create_connection((self.host, self.port), timeout=self.timeout, source_address=self.source_address) as sock:
+
+          bundle = cafile = self.get_ca_cert_bundle()
+          if bundle is None:
+              ca_certs = NamedTemporaryFile()
+              ca_certs.write('\n'.join(
+                  map(str.strip, self.CA_ROOT_CERT_FALLBACK.splitlines())
+              ).encode('ascii'))
+              ca_certs.flush()
+              cafile = ca_certs.name
+          self.sock = context.wrap_socket(sock, server_hostname=self.host, do_handshake_on_connect=True)
+
+          if bundle is None:
+              ca_certs.close()

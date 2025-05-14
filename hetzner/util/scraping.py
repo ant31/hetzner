@@ -1,7 +1,4 @@
-try:
-    from HTMLParser import HTMLParser
-except ImportError:
-    from html.parser import HTMLParser
+from html.parser import HTMLParser
 
 
 class CSRFParser(HTMLParser):
