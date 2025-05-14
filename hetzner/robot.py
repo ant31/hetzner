@@ -23,7 +23,7 @@ from hetzner.vswitch import VswitchManager
 from hetzner.util.http import ValidatedHTTPSConnection
 
 ROBOT_HOST = "robot-ws.your-server.de"
-ROBOT_WEBHOST = "robot.your-server.de"
+ROBOT_WEBHOST = "robot.hetzner.com"
 ROBOT_LOGINHOST = "accounts.hetzner.com"
 
 RE_CSRF_TOKEN = re.compile(
